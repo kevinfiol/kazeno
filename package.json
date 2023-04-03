@@ -1,0 +1,6 @@
+{
+  "type": "module",
+  "devDependencies": {
+    "linkedom": "^0.14.25"
+  }
+}
