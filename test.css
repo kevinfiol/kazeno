@@ -1,9 +1,0 @@
-.btn {
-    color: var(--blue-300);
-    background-color: var(--blue-500);
-}
-
-.btn > .label {
-    color: var(--white-200);
-    background-color: var(--blue-300);
-}
