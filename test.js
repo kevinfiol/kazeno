@@ -2,6 +2,6 @@ import { build } from './index.js';
 
 await build({
   path: './test',
-  ext: /\.(js|jsx|ts|tsx)$/,
-  output: './output.css'
+  ext: /\.(js|jsx|ts|tsx|html)$/,
+  output: './test/output.css'
 });
