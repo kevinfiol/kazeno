@@ -1,6 +1,6 @@
-import { resolve, join } from 'node:path';
-import { readFileSync } from 'node:fs';
-import { readFile, opendir, writeFile } from 'node:fs/promises';
+const { resolve, join } = require('node:path');
+const { readFileSync } = require('node:fs');
+const { readFile, opendir, writeFile } = require('node:fs/promises');
 
 let classes = JSON.parse(readFileSync('./classes.json', 'utf8'));
 
@@ -55,7 +55,7 @@ let mods = {
   'print': '@media print {'
 };
 
-export async function build({ path = '.', ext = /\.(js|jsx|ts|tsx)$/, output = 'app.css', preflight = true } = {}) {
+module.exports.build = build;async function build({ path = '.', ext = /\.(js|jsx|ts|tsx)$/, output = 'app.css', preflight = true } = {}) {
   let filePath = resolve(path),
     outfile = resolve(output),
     written = {},
@@ -77,7 +77,7 @@ export async function build({ path = '.', ext = /\.(js|jsx|ts|tsx)$/, output = '
   console.timeEnd('build');
 }
 
-export async function processFile(filename = '', written = {}) {
+module.exports.processFile = processFile;async function processFile(filename = '', written = {}) {
   let contents = await readFile(filename, 'utf8'),
     matches = contents.matchAll(/'(.*?)'|"([^"]*)"/g),
     css = '',

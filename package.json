@@ -1,3 +1,29 @@
 {
-  "type": "module"
+  "name": "kazeno",
+  "version": "0.1.0",
+  "author": "kevinfiol",
+  "license": "ISC",
+  "repository": "https://github.com/kevinfiol/kazeno",
+  "type": "module",
+  "description": "CSS utility classes",
+  "main": "kazeno.cjs",
+  "types": "index.d.ts",
+  "module": "index.js",
+  "scripts": {
+    "build": "node transpile.js",
+    "prepare": "node transpile.js"
+  },
+  "engines": {
+    "node": ">=14.x"
+  },
+  "files": [
+    "*.d.ts",
+    "dist",
+    "index.js"
+  ],
+  "keywords": [
+    "atomic_css",
+    "functiona css",
+    "ocss"
+  ]
 }

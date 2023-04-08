@@ -1,4 +1,4 @@
-# taildude
+# kazeno
 
 > What if we just take Tailwind CSS defaults and stick them into a giant hash map?
 
@@ -11,13 +11,13 @@ You would get this.
 ## Usage
 
 ```shell
-npm install tailguy --save-dev
+npm install kazeno --save-dev
 ```
 
 1. Write a build script
 ```js
 // build.js
-import { build } from 'tailguy';
+import { build } from 'kazeno';
 
 await build({
   // path containing your source files
@@ -26,7 +26,7 @@ await build({
   ext: /\.(js|jsx|ts|tsx)$/,
   // where to save the css containing all of your classes
   output: './app.css',
-  // include tailwind normalization CSS
+  // include normalization CSS
   preflight: true
 })
 ```
@@ -64,7 +64,12 @@ Years ago, I was a user and proponent of [basscss](https://basscss.com/), a tiny
 Despite all this churn, I miss the simplicity and opinionated nature of Basscss which clocked in around 2kb *without* any build steps or purging (meanwhile, a Tailwind local install is 9MB and ropes in ~70 or so dependencies). The JIT approach seems like a nice and sensible alternative to purging, so I wanted to see what could be done with a weekend's worth of effort. If anything, the next iteration of this will look more like Basscss since I prefer their class naming scheme to Tailwind's.
 
 ## Should I use this?
-For your job? Probably not. For your toy project? Go for it, and let me know what you'd like to see or what's missing.
+For your livelihood? Probably not. For your toy project? Go for it, and let me know of any breakage. Some notable things missing from this:
+
+* No customization
+* Not all psuedo variants are implemented
+* Gradients are not implemented
+* Probably more
 
 ## Inspiration
 [TailwindCSS](https://tailwindcss.com/) and [WindiCSS](https://windicss.org/).
