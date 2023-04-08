@@ -1,6 +1,6 @@
 {
   "name": "kazeno",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "kevinfiol",
   "license": "ISC",
   "repository": "https://github.com/kevinfiol/kazeno",
@@ -18,8 +18,9 @@
   },
   "files": [
     "*.d.ts",
-    "dist",
-    "index.js"
+    "index.js",
+    "classes.json",
+    "preflight.css"
   ],
   "keywords": [
     "atomic_css",
