@@ -2,31 +2,84 @@ import { resolve, join } from 'node:path';
 import { readFile, opendir, writeFile } from 'node:fs/promises';
 import classes from './classes.js';
 
-const pseudo = {
+// https://tailwindcss.com/docs/hover-focus-and-other-states
+let mods = {
   hover: 1,
+  focus: 1,
   active: 1,
-  focus: 1
+  visited: 1,
+  target: 1,
+  first: 1,
+  last: 1,
+  only: 1,
+  odd: 1,
+  even: 1,
+  empty: 1,
+  disabled: 1,
+  enabled: 1,
+  checked: 1,
+  indeterminate: 1,
+  default: 1,
+  required: 1,
+  valid: 1,
+  invalid: 1,
+  autofill: 1,
+  'focus-within': 1,
+  'focus-visible': 1,
+  'first-of-type': 1,
+  'last-of-type': 1,
+  'only-of-type': 1,
+  'in-range': 1,
+  'out-of-range': 1,
+  'placeholder-shown': 1,
+  'read-only': 1,
+  sm: '@media (min-width: 640px) {',
+  md: '@media (min-width: 768px) {',
+  lg: '@media (min-width: 1024px) {',
+  xl: '@media (min-width: 1280px) {',
+  '2xl': '@media (min-width: 1536px) {',
+  dark: '@media (prefers-color-scheme: dark) {',
+  'max-sm': '@media not all and (min-width: 640px) {',
+  'max-md': '@media not all and (min-width: 768px) {',
+  'max-lg': '@media not all and (min-width: 1024px) {',
+  'max-xl': '@media not all and (min-width: 1280px) {',
+  'max-2xl': '@media not all and (min-width: 1536px) {',
+  'portrait': '@media (orientation: portrait) {',
+  'landscape': '@media (orientation: landscape) {',
+  'motion-safe': '@media (prefers-reduced-motion: no-preference) {',
+  'motion-reduce': '@media (prefers-reduced-motion: reduce) {',
+  'contrast-more': '@media (prefers-contrast: more) {',
+  'contrast-less': '@media (prefers-contrast: less) {',
+  'print': '@media print {'
 };
 
-export async function build({ path = '.', ext = /\.(js|jsx|ts|tsx)$/, output = 'app.css' } = {}) {
+export async function build({ path = '.', ext = /\.(js|jsx|ts|tsx)$/, output = 'app.css', preflight = true } = {}) {
   let filePath = resolve(path),
     outfile = resolve(output),
     written = {},
-    css = '';
+    css = '',
+    mediaCss = '';
 
-  for (let filename of await walk(filePath)) {
+  console.time('build');
+  if (preflight) css += await readFile(resolve('./preflight.css'), 'utf8');
+
+  for (let filename of await walk(filePath))
     if (ext.test(filename)) {
-      css += await processFile(filename, written);
+      let [_css, _mediaCss] = await processFile(filename, written);
+      css += _css;
+      mediaCss += _mediaCss;
     }
-  }
 
+  css += mediaCss;
   await writeFile(outfile, css, 'utf8');
+  console.timeEnd('build');
 }
 
 export async function processFile(filename = '', written = {}) {
   let contents = await readFile(filename, 'utf8'),
     matches = contents.matchAll(/'(.*?)'|"([^"]*)"/g),
-    css = '';
+    css = '',
+    mediaCss = '';
 
   for (let match of matches) {
     match = match[1] || match[2];
@@ -48,11 +101,29 @@ export async function processFile(filename = '', written = {}) {
       if (!rule) continue;
 
       if (hasMods) {
-        for (let modifier of tmp) {
-          if (!pseudo[modifier]) continue;
-          let modCls = `${modifier}\\:${cls}:${modifier}`;
+        for (let mod of tmp) {
+          let val = mods[mod];
+          if (!val) continue;
 
-          if (!written[modCls]) {
+          if (typeof val === 'string') {
+            let modCls = `${mod}\\:${cls}`;
+            if (written[modCls]) continue;
+            written[modCls] = 1;
+
+            let chunks = mediaCss.split(val);
+            if (chunks.length > 1) {
+              mediaCss = chunks[0]
+                + val
+                + `\n  .${modCls} { ${rule} }`
+                + chunks[1];
+            } else {
+              mediaCss += val  // add media query
+                + `\n  .${modCls} { ${rule} }`
+                + '\n}\n'; // close query
+            }
+          } else {
+            let modCls = `${mod}\\:${cls}:${mod}`;
+            if (written[modCls]) continue;
             written[modCls] = 1;
             css += `.${modCls.replaceAll('/', '\\/')} { ${rule} }\n`;
           }
@@ -64,7 +135,7 @@ export async function processFile(filename = '', written = {}) {
     }
   }
 
-  return css;
+  return [css, mediaCss];
 }
 
 async function walk(dir, files = []) {
