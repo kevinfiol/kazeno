@@ -28,7 +28,7 @@ await build({
   output: './app.css',
   // include normalization CSS
   preflight: true
-})
+});
 ```
 
 2. Use some Tailwind CSS classes
